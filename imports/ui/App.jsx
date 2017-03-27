@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 
+import Result from "./Result"
 // App component - represents the whole app
 export class App extends Component {
 
@@ -25,27 +26,31 @@ export class App extends Component {
     });
   }
 
+  renderResults() {
+    if (this.state && this.state.walmartResults) {
+      return this.state.walmartResults.items.map((res) => {
+          return (<Result key={res.itemId} result={res}/>)
+        });
+    } else {
+      return <div></div>
+    }
+  }
+
   render() {
     return (
       <div>
         <input type="text" onKeyPress={this.getWalmartResults.bind(this)} placeholder="search Walmart" aria-label="search Walmart"/>
-        <div>Walmart results:</div>
-        { /* If we get data display it, otherwise show "" */ }
-        <div>{this.state && this.state.walmartResults ?
-          JSON.stringify(this.state.walmartResults) :
-          ""
-        }</div>
+        <div>Results:</div>
+
+          <div>
+            {this.renderResults()}
+          </div>
       </div>
     );
   }
 }
 
-// App.propTypes = {
-//   walmartResults : PropTypes.object
-// }
-
 export default AppContainer = createContainer( (params)=> {
   return {
-    query:params.query
   };
 }, App)

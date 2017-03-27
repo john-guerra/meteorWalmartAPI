@@ -11,6 +11,6 @@ Meteor.methods({
 		let myWalmart = walmart(process.env.WALMART_API_KEY);
 
     // Return the promise
-    return myWalmart.search("ipod");
+    return myWalmart.search(query);
 	}
 });

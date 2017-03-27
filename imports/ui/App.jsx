@@ -4,13 +4,35 @@ import { createContainer } from 'meteor/react-meteor-data';
 // App component - represents the whole app
 export class App extends Component {
 
+  constructor(props) {
+    super(props);
+  }
+
+  getWalmartResults(event) {
+    let key= event.keyCode || event.which;
+    if(key !== 13){
+        console.log("I'll only query on enter");
+        return;
+    }
+
+    console.log("searching...");
+    Meteor.call("walmart.search", event.target.value, (err, res) => {
+      if (err) { console.log(err); }
+
+      console.log("made it!");
+      console.log(res);
+      this.setState({walmartResults: res});
+    });
+  }
+
   render() {
     return (
       <div>
+        <input type="text" onKeyPress={this.getWalmartResults.bind(this)} placeholder="search Walmart" aria-label="search Walmart"/>
         <div>Walmart results:</div>
         { /* If we get data display it, otherwise show "" */ }
-        <div>{this.props.walmartResults ?
-          JSON.stringify(this.props.walmartResults) :
+        <div>{this.state && this.state.walmartResults ?
+          JSON.stringify(this.state.walmartResults) :
           ""
         }</div>
       </div>
@@ -18,23 +40,12 @@ export class App extends Component {
   }
 }
 
-App.propTypes = {
-  walmartResults : PropTypes.object
-}
+// App.propTypes = {
+//   walmartResults : PropTypes.object
+// }
 
 export default AppContainer = createContainer( (params)=> {
-  console.log("calling walmart");
-  Meteor.call("walmart.search", "ipod", (err, res) => {
-    if (err) { console.log(err); }
-
-    console.log("made it!");
-    console.log(res);
-    return {
-      walmartResults: res,
-    }
-  });
-
   return {
-    walmartResults: {},
+    query:params.query
   };
 }, App)
